@@ -174,8 +174,8 @@ pub fn setup_fonts(cc: &eframe::CreationContext) {
 
 // --- Android entry point (compiled only for Android targets) ---
 #[cfg(target_os = "android")]
-#[no_mangle]
-fn android_main(app: android_activity::AndroidApp) {
+#[unsafe(no_mangle)]
+fn android_main(_app: android_activity::AndroidApp) {
     let options = eframe::NativeOptions {
         viewport: egui::ViewportBuilder::default()
             .with_inner_size([400.0, 380.0])
@@ -185,6 +185,6 @@ fn android_main(app: android_activity::AndroidApp) {
     let _ = eframe::run_native(
         "生肖计算器",
         options,
-        Box::new(|cc| Ok(Box::new(ZodiacApp::default()))),
+        Box::new(|_cc| Ok(Box::new(ZodiacApp::default()))),
     );
 }

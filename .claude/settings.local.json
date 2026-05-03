@@ -9,7 +9,11 @@
       "Bash(git branch *)",
       "Bash(git push *)",
       "Bash(git tag *)",
-      "Bash(gh run *)"
+      "Bash(gh run *)",
+      "Bash(cargo locate-project *)",
+      "Read(///?/C:/Users/liuqi/.cargo/registry/**)",
+      "Read(///?/C:/Users/liuqi/**)",
+      "Bash(rustup target *)"
     ]
   }
 }
