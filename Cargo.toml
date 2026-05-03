@@ -2,6 +2,18 @@
 name = "demo"
 version = "0.1.0"
 edition = "2024"
+description = "Chinese Zodiac Calculator"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 eframe = "0.31"
+
+[target.'cfg(target_os = "android")'.dependencies]
+android-activity = "0.6"
+
+[package.metadata.android]
+package = "com.zodiac.calculator"
+label = "生肖计算器"
+build_targets = ["aarch64-linux-android", "armv7-linux-androideabi", "x86_64-linux-android"]

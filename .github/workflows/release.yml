@@ -5,6 +5,9 @@ on:
     tags:
       - 'v*'
 
+permissions:
+  contents: write
+
 env:
   CARGO_TERM_COLOR: always
 
@@ -29,7 +32,6 @@ jobs:
             target: aarch64-apple-darwin
 
     runs-on: ${{ matrix.os }}
-
     steps:
       - uses: actions/checkout@v4
 
@@ -50,29 +52,29 @@ jobs:
       - name: Build release
         run: cargo build --release --target ${{ matrix.target }}
 
-      - name: Package (Unix)
-        if: runner.os != 'Windows'
+      - name: Package (Linux)
+        if: runner.os == 'Linux'
         run: |
-          BINARY_NAME="demo"
+          cp "target/${{ matrix.target }}/release/demo" .
+          tar czf "zodiac-calculator-x86_64-linux.tar.gz" demo
+
+      - name: Package (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          BINARY="target/${{ matrix.target }}/release/demo"
           if [ "${{ matrix.target }}" = "aarch64-apple-darwin" ]; then
-            ARCH="arm64-apple"
-          elif [ "${{ matrix.target }}" = "x86_64-apple-darwin" ]; then
-            ARCH="x86_64-apple"
+            ARCHIVE="zodiac-calculator-arm64-macos.tar.gz"
           else
-            ARCH="x86_64-linux"
+            ARCHIVE="zodiac-calculator-x86_64-macos.tar.gz"
           fi
-          ARCHIVE_NAME="zodiac-calculator-${ARCH}.tar.gz"
-          cp "target/${{ matrix.target }}/release/${BINARY_NAME}" .
-          tar czf "${ARCHIVE_NAME}" "${BINARY_NAME}"
-          echo "archive=${ARCHIVE_NAME}" >> $GITHUB_ENV
+          cp "$BINARY" .
+          tar czf "$ARCHIVE" demo
 
       - name: Package (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          $ARCHIVE_NAME = "zodiac-calculator-x86_64-windows.zip"
-          Compress-Archive -Path "target/${{ matrix.target }}/release/demo.exe" -DestinationPath $ARCHIVE_NAME
-          echo "archive=$ARCHIVE_NAME" | Out-File -FilePath $env:GITHUB_ENV -Append
+          Compress-Archive -Path "target/${{ matrix.target }}/release/demo.exe" -DestinationPath "zodiac-calculator-x86_64-windows.zip"
 
       - name: Upload release artifacts
         uses: softprops/action-gh-release@v2
@@ -80,4 +82,34 @@ jobs:
           files: |
             zodiac-calculator-*.tar.gz
             zodiac-calculator-*.zip
-          generate_release_notes: true
+
+  android:
+    name: aarch64-linux-android
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: android
+
+      - name: Install cargo-ndk
+        run: cargo install cargo-ndk
+
+      - name: Build native library
+        run: cargo ndk -t arm64-v8a build --release
+
+      - name: Package
+        run: |
+          mkdir -p android-output/jni/arm64-v8a
+          cp target/aarch64-linux-android/release/libdemo.so android-output/jni/arm64-v8a/
+          cd android-output && zip -r ../zodiac-calculator-arm64-android.zip ./*
+
+      - name: Upload release artifacts
+        uses: softprops/action-gh-release@v2
+        with:
+          files: zodiac-calculator-arm64-android.zip
