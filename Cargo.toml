@@ -19,6 +19,3 @@ label = "生肖计算器"
 build_targets = ["aarch64-linux-android"]
 min_sdk_version = 24
 target_sdk_version = 34
-version_name = "0.1.1"
-version_code = 1
-icon = "icon.svg"

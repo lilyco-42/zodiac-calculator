@@ -10,9 +10,8 @@ fn main() -> eframe::Result {
     eframe::run_native(
         "生肖计算器",
         options,
-        Box::new(|_cc| {
-            #[cfg(not(target_os = "android"))]
-            demo::setup_fonts(_cc);
+        Box::new(|cc| {
+            demo::setup_fonts(cc);
             Ok(Box::new(demo::ZodiacApp::default()))
         }),
     )

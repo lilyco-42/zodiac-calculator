@@ -144,31 +144,17 @@ pub fn create_icon() -> egui::IconData {
     }
 }
 
-#[cfg(not(target_os = "android"))]
 pub fn setup_fonts(cc: &eframe::CreationContext) {
     let mut fonts = egui::FontDefinitions::default();
-
-    let chinese_fonts = [
-        "C:\\Windows\\Fonts\\msyh.ttc",
-        "C:\\Windows\\Fonts\\simsun.ttc",
-        "C:\\Windows\\Fonts\\simhei.ttf",
-        "C:\\Windows\\Fonts\\deng.ttf",
-    ];
-
-    for path in &chinese_fonts {
-        if let Ok(data) = std::fs::read(path) {
-            fonts
-                .font_data
-                .insert("chinese".to_owned(), egui::FontData::from_owned(data).into());
-            fonts
-                .families
-                .get_mut(&egui::FontFamily::Proportional)
-                .unwrap()
-                .insert(0, "chinese".to_owned());
-            break;
-        }
-    }
-
+    fonts.font_data.insert(
+        "chinese".to_owned(),
+        egui::FontData::from_static(include_bytes!("../msyh-subset.ttf")).into(),
+    );
+    fonts
+        .families
+        .get_mut(&egui::FontFamily::Proportional)
+        .unwrap()
+        .insert(0, "chinese".to_owned());
     cc.egui_ctx.set_fonts(fonts);
 }
 
@@ -185,6 +171,9 @@ fn android_main(_app: android_activity::AndroidApp) {
     let _ = eframe::run_native(
         "生肖计算器",
         options,
-        Box::new(|_cc| Ok(Box::new(ZodiacApp::default()))),
+        Box::new(|cc| {
+            setup_fonts(cc);
+            Ok(Box::new(ZodiacApp::default()))
+        }),
     );
 }
