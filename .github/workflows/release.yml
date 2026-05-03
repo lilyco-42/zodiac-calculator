@@ -106,16 +106,16 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Install Android SDK platforms
-        run: yes | sdkmanager "platforms;android-30" "platforms;android-34" 2>&1 | tail -5
+      - name: Install Android SDK components
+        run: |
+          yes | sdkmanager --licenses 2>&1 | tail -3 || true
+          sdkmanager "platforms;android-30" "build-tools;30.0.3" 2>&1 | tail -5
 
       - name: Install cargo-apk
         run: cargo install cargo-apk
 
       - name: Build APK
         run: cargo apk build --release
-        env:
-          ANDROID_HOME: ${{ env.ANDROID_HOME }}
 
       - name: Locate and rename APK
         run: |
