@@ -17,5 +17,3 @@ android-activity = { version = "0.6", features = ["native-activity"] }
 package = "com.zodiac.calculator"
 label = "生肖计算器"
 build_targets = ["aarch64-linux-android"]
-min_sdk_version = 24
-target_sdk_version = 34
