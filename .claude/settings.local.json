@@ -13,7 +13,8 @@
       "Bash(cargo locate-project *)",
       "Read(///?/C:/Users/liuqi/.cargo/registry/**)",
       "Read(///?/C:/Users/liuqi/**)",
-      "Bash(rustup target *)"
+      "Bash(rustup target *)",
+      "Bash(gh release *)"
     ]
   }
 }
